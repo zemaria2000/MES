@@ -1,11 +1,8 @@
 import json
 import socket
-from opcua import Client
 from bs4 import BeautifulSoup
 from time import sleep
 from colorama import Fore, Style, init
-import signal
-import sys
 import numpy.random as random
 
 
@@ -50,7 +47,7 @@ def main():
 
     while True:
         # Fill variable XML fields
-        xml_filled = populate_xml_variables(xml_filled, client, VARIABLES)
+        xml_filled = populate_xml_variables(xml_filled, VARIABLES)
         # print(xml_filled)
 
         # Add 4 header bytes and create telegram to send
@@ -133,7 +130,7 @@ def populate_xml_constants(j, xml, event):
 # FUNCTION THAT READS config.json AND ADDS INFO TO XML FILE
 # ==================================================================
 
-def populate_xml_variables(xml, opc, VARIABLES):
+def populate_xml_variables(xml, VARIABLES):
     bs_xml = BeautifulSoup(xml, 'xml')
     
     # ---------------------- <body> ------------------------------
@@ -237,17 +234,10 @@ def generate_env_vars(VARIABLES):
     return env_vars
 
 
-def signal_handler(sig, frame):
-    client.disconnect
-    print("Closed␣OPC␣UA␣connection,␣exiting␣...")
-    sys.exit(0)
-
 
 if __name__ == '__main__':
     # Read config file
     c, j = initial_config()
-    client = Client(c['OPC'])
-    signal.signal(signal.SIGINT, signal_handler)
     main()
 
 
