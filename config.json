@@ -1,0 +1,7 @@
+{
+    "Host": "ims.mec.ua.pt",
+    "Port": 55965,
+    "Interval": 30,
+    "Event": "partProcessed",
+    "OPC": "opc.tcp://ibhlinkua_011088:48010"
+}

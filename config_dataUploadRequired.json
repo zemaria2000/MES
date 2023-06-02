@@ -1,0 +1,22 @@
+{
+    "XMLtemplate": "Example_XML_dataUploadRequired.xml",
+    "header": {
+        "eventId": "0",
+        "eventName": "dataUploadRequired",
+        "version": "1.0",
+        "eventSwitch": "50",
+        "contentType": "3",
+        "location": {
+            "lineNo": "9999",
+            "statNo": "30",
+            "statIdx": "1",
+            "fuNo": "1",
+            "workPos": "1",
+            "toolPos": "1",
+            "application": "PLC",
+            "processName": "TestServerConfig3",
+            "processNo": "282"
+        }
+    }
+}
+    

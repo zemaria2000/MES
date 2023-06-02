@@ -1,0 +1,25 @@
+{
+    "XMLtemplate": "Example_XML_partProcessed.xml",
+    "header": {
+        "eventId": "1",
+        "eventName": "partProcessed",
+        "version": "1.0",
+        "eventSwitch": "-1",
+        "contentType": "3",
+        "location": {
+            "lineNo": "9999",
+            "statNo": "30",
+            "statIdx": "1",
+            "fuNo": "1",
+            "workPos": "1",
+            "toolPos": "1",
+            "application": "PLC",
+            "processName": "Final Functional Test",
+            "processNo": "1260"
+        }
+    },
+    "event": {
+        "identifier": "99992730000004445556660"
+    }
+}
+            

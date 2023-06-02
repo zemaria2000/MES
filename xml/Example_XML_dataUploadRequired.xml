@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<root>
+    <header eventId="" eventName="" version="" eventSwitch="" contentType="">
+    <location lineNo="" statNo="" statIdx="" fuNo="" workPos="" toolPos="" application="" processName="" processNo="" />
+    </header>
+    <event>
+        <dataUploadRequired />
+    </event>
+    <body>
+        <structArrays>
+            <array name="processRealData">
+                <structDef>
+                    <item name="name" dataType="8" />
+                    <item name="value" dataType="4" />
+                    <item name="upLim" dataType="4" />
+                    <item name="loLim" dataType="4" />
+                    <item name="checkType" dataType="3" />
+                    <item name="unit" dataType="8" />
+                    <item name="resultState" dataType="3" />
+                </structDef>
+                <values>
+                    <item name="Temperature" value="" upLim="250.000" loLim="220.000" checkType="5" unit="C" resultState="1" />
+                    <item name="Humidity" value="" upLim="250.000" loLim="220.000" checkType="5" unit="" resultState="1" />
+                </values>
+            </array>
+        </structArrays>
+        <structs>
+            <resHead cycleTimePrev="0" nioBits="0" result="0" typeNo="" typeVar="" workingCode="0" />
+        </structs>
+    </body>
+</root>
