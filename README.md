@@ -23,5 +23,6 @@ Para o <b>Exemplo 1 - Simulador em Python</b>, tem-se:
 
 
 ## Créditos
-Grande parte do código desenvolvido é da autoria do <a href = https://github.com/goncaloavmatos><strong>goncaloavmatos</strong></a>
+Grande parte do código desenvolvido é da autoria do <a href = https://github.com/goncaloavmatos><strong>goncaloavmatos</strong></a> 
+  
 Eu apenas fiz alguns ajustes e adaptações do seu código.
