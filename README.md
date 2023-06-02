@@ -23,7 +23,7 @@ Para o <b>Exemplo 1 - Simulador em Python</b>, tem-se:
   
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 No que toca ao <b>Exemplo 2 - Simulador com um ESP</b>, tem-se no diretório <a href = https://github.com/zemaria2000/MES/tree/master/ESP_Tests><strong>ESP_Tests</strong></a>:
-<li> <a href = https://github.com/zemaria2000/MES/tree/master/ESP_Tests/Trabalho_Gon_alo><strong>Trabalho_Gonçalo</strong></a> - contém um ficheiro Arduino que envia um XML sempre com os mesmos valores, que serviu apenas para fazer o teste da conexão entre o ESP e o MES;</li>
+<li> <a href = https://github.com/zemaria2000/MES/tree/master/ESP_Tests/Experiment><strong>Experiment</strong></a> - contém um ficheiro Arduino que envia um XML sempre com os mesmos valores, que serviu apenas para fazer o teste da conexão entre o ESP e o MES;</li>
 <li> <a href = https://github.com/zemaria2000/MES/tree/master/ESP_Tests/Send_TC74_to_MES><strong>Send_TC74_to_MES</strong></a> - contém um ficheiro em Arduino com o qual é possível enviar a leitura da temperatura obtida no TC74 para o MES, através de um evento do tipo partProcessed.</li>
 
 O setup experimental foi baseado no trabalho que pode ser consultado <a href = https://github.com/ThomasGeor/esp32_tc74_temperature_sensor><strong>aqui</strong></a>.
