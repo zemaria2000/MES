@@ -1,22 +1,21 @@
 #include <WiFi.h>
-#include <cstdlib> // Funções malloc() and free()
+#include <cstdlib> // For malloc() and free() functions
 #include <Wire.h>
 
-// Definir o address do TC74
 #define TC74_ADDRESS 0x4D
 
-// Constantes associadas à conexão ao router + conexão ao servidor
-const char* ssid = "José's Galaxy S21 5G";
-const char* password = "lemc0316";
-const char* host = "193.137.172.20"; // Servidor
+// Some router and server configurations
+const char* ssid = "José's Galaxy S21 5G";  // replace with your hotspot ID
+const char* password = "lemc0316";    // replace with the respective password
+const char* host = "193.137.172.20"; // server IP address
 
-// WiFiClient, permite enviar ou receber dados por TCP/IP a um cliente
+// WiFiClient object, which allows us to send data to a client via TCP/IP
 WiFiClient client; 
 
-// Porta do MES com a qual queremos comunicar
+// MES port that will receive the requests
 const int httpPort = 55965; 
 
-// XML que devemos seguir à letra para enviar um evento do tipo partProcessed para o MES
+// XML with the "partProcessed" correct structure
 String telegram = R"(
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <root>
@@ -59,23 +58,22 @@ void setup() {
   
   Serial.print("Connecting to "); 
   Serial.println(ssid);
-  
+
+  // Establish connection to our router (hotspot)
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
   
-  // O ESP envia por porta série, para o PC local esta informaçao:
   Serial.println("");
-  Serial.println("O ESP está ligado por WiFi ao Router, o Router deu-lhe o IP ");
+  Serial.println("ESP is connected via WiFi to the router, which gave him the following IP address: "
   
   // IP address
-  Serial.print("IP local: ");
-  Serial.println(WiFi.localIP()); // Imprimir IP do ESP
+  Serial.print("Local IP: ");
+  Serial.println(WiFi.localIP());
 
-
-  // Inicializar a comunicação I2C por causa do TC74
+  // Start I2C communication with the TC74
   Wire.begin();
 } // setup
 
@@ -83,11 +81,12 @@ void setup() {
 void loop() {
 
  
-  // ------------------- TENTA LIGAR POR TCP/IP ao cliente (neste caso o computador do MES) ---------------------- //
-  // O objetivo é conectar ao host - ims.mec.ua.pt/193.137.172.20 - e enviar pedidos à porta 55965, associada ao MES
+  // ------------------- TRYING TO CONNECT VIA TCP/IP TO THE CLIENT ---------------------- //
+  // We want to connect to the MES pc (193.137.172.20) and send requests to port 55965, which accepst the XML telegrams
   
    client.connect(host, httpPort);
 
+   // While the connection is not established
    while(!client.connected()) {
       Serial.print("Connecting to ");
       Serial.println(host);
@@ -95,105 +94,96 @@ void loop() {
       client.connect(host, httpPort);
    }
 
-   // Conexão estabelecida
-   Serial.println("\n ESP conectou-se com sucesso ao cliente \n");
+   // Connection established successfully
+   Serial.println("\n ESP is successfully connected with the server \n");
        
  
-  // --------------------- SE LIGACAO TCP ESTABELECIDA --------------------------------------------- //
-  // Se já se conseguir ter a ligação devidamente estabelecida - ou seja, se client.connected() == TRUE
+  // --------------------- IF WE HAVE AN ESTABLISHED TCP/IP CONNECTION --------------------------------------------- //
   
   if (client.connected()) {
 
-    // -------------------------- OBTER VALOR DA TEMPERATURA ----------------------------- //
+    // -------------------------- GET TEMPERATURE VALUE ----------------------------- //
   
-    // Fazer um pedido ao endereço associado ao TC74 a pedir o valor da temperatura
+    // Making a request to the address previously configured as the TC74 temperature address
     Wire.requestFrom(TC74_ADDRESS, 1);
     while (Wire.available() == 0);
   
-    // Guardar o valor da temperatura num byte
+    // Save the temperature value in a byte
     byte temperature = Wire.read();
-    // Converter valor da temperatura para uma string
+    // Convert it to a string
     String temperature_converted = String(temperature, DEC);
 
-    // Substituir na string telegram o novo valor que pretendemos enviar relativamente à temperatura
+    // Replace in the appropriate place the temperatura value, in the XML to send
     telegram.replace("<item name=\"Temperature\" value=\"232.27\"", "<item name=\"Temperature\" value=\"" + temperature_converted + "\"");
 
 
-    // -------------------------- ENVIO DO XML PARA O MES ---------------------------------- //    
+    // -------------------------- SEND XML TO MES ---------------------------------- //    
 
-    // Determinar o tamanho do xml a enviar para o telegram
-    int telegram_size_og = telegram.length(); // tamanho original
-    int telegram_size = telegram.length() + 4 ; // tamanho com mais 4 bytes. Isso porque é sempre necessário enviar um header com estes 4 bytes iniciais
-
+    // Getting the size of the telegram to send
+    int telegram_size_og = telegram.length(); // original size
+    int telegram_size = telegram.length() + 4 ; // 4 more bytes because of the header
     Serial.println("\n Telegram Size: ");
     Serial.print(telegram_size);
       
-    // Geração dos primeiros 4 bytes - baseados numa fórmula definida pelo próprio MES...
+    // Generating those 1st 4 bytes - formula from MES
     byte lolo = (telegram_size & 0xff);
     byte hilo = ((telegram_size >> 8) & 0xff);
     byte lohi = ((telegram_size >> 16) & 0xff);
     byte hihi = (telegram_size >> 24);
 
-    // Definição do header da mensagem
+    // Defining the message header
     int telegramHeader[4] = {hihi, lohi, hilo, lolo};
   
-    // Número de elementos no header??
+    // Number of elements in the header
     int numel_telegramBytes = sizeof(telegramHeader)/sizeof(telegramHeader[0]);
-//    Serial.println("\n\n");
-//    Serial.println("numel");
-//    Serial.println(numel_telegramBytes);
   
-    // Fazer um print dos primeiros 4 bytes, só para confirmar que foram devidamente criados
+    // Print out those 4 header bytes, just to make sure they were successfully created
     for(int i = 0; i < numel_telegramBytes ; i++){
       Serial.print(telegramHeader[i]);
       Serial.print(" ");
     }
     Serial.println("");
     
-    // Converter a string para um char array
-    int telegram_buf_len = telegram_size_og + 1; // O comprimento final da string será +1 devido à necessidade de se colocar um caracter de terminação
+    // Convert string to char array
+    int telegram_buf_len = telegram_size_og + 1; // Adding 1 to the size because of a termination byte
     Serial.print("Telegram_buf_len:");
     Serial.println(telegram_buf_len);
     
-    char char_array[telegram_buf_len]; // Preparar então o array onde vão ser colocados todos os bytes
+    char char_array[telegram_buf_len]; // Prepare an array where we'll put the entire telegram
    
-    telegram.toCharArray(char_array,telegram_buf_len); // Converter a string telegram para o array criado. 
-    // É de salientar que faltam ainda alocar o header e o caracter de terminação
-
-
-    // Guardar os bytes a enviar na memória dinâmica do ESP
+    telegram.toCharArray(char_array,telegram_buf_len); // Convert the string to a char array
+   
+    // Store those bytes in the dynamicmemory of the ESP
     byte* telegramBytes = (byte*)malloc(telegram_size);
 
     if (telegramBytes != NULL) {
       
-      // Copiamos agora o header para o array telegramBytes
+      // Copying the header to the bytes array
       for (int i = 0; i < numel_telegramBytes; i++) {
         telegramBytes[i] = telegramHeader[i];
       }
 
-      // De seguida copiamos todos os caracteres do XML (agora no charArray telegram) para dentro deste array
+      // Copying every byte from the telegram char array to this new array to send
       for (int i = 0; i < telegram_size_og; i++) {
-        int telegram_to_int = telegram[i] - '0' + 48; // Conversão para decimal
+        int telegram_to_int = telegram[i] - '0' + 48; // Converting the bytes to decimal values
         telegramBytes[i + 4] = (byte)telegram_to_int;
       }
 
-      // Enviamos os bytes para o cliente
+      // Sending those bytes to MES
       for (int i = 0; i < telegram_size; i++) {
         client.write(telegramBytes[i]);
       }
 
-      // Eliminamos da memória dinâmica o array com os bytes enviados, de forma a libertar espaço
+      // Eliminating the byte array sent from the ESP's dynamic memory. Just to free some space
       free(telegramBytes);
     } 
     
     else {
-      // Else apenas serve para quando não é possível criar o array telegramBytes
       Serial.println("Failed to allocate memory for telegramBytes.");
     }
 
   }   // IF (client.connected())
 
-  Serial.print("Espera 10 segundos");
+  Serial.print("Eait 10 secs for the next data injection");
   delay(10000);
-  // ...
 }
