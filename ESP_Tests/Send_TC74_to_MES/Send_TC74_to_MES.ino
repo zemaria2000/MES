@@ -67,7 +67,7 @@ void setup() {
   }
   
   Serial.println("");
-  Serial.println("ESP is connected via WiFi to the router, which gave him the following IP address: "
+  Serial.println("ESP is connected via WiFi to the router, which gave him the following IP address: ");
   
   // IP address
   Serial.print("Local IP: ");
